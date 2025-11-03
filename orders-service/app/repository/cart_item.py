@@ -5,7 +5,7 @@ from app.models.cart import Cart
 from sqlalchemy.orm import Session
 
 
-def create(data: CartItemCreate, user_id: int, db: Session) -> CartItem:
+def create(data: CartItemCreate, user_id: int, db: Session) -> CartItem | None:
     cart_id = db.query(Cart).filter(Cart.user_id == user_id).first().id
     if not cart_id:
         return None

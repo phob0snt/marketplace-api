@@ -1,4 +1,4 @@
-from app.schemas.product import ProductCreate, ProductDelete, ProductUpdate
+from app.schemas.product import ProductCreate, ProductDelete, ProductUpdateQuantity
 from sqlalchemy.orm import Session
 from app.models.product import Product
 
@@ -27,7 +27,7 @@ def get_product_by_id(product_id: int, db: Session) -> Product | None:
 def list_products(offset: int, limit: int, db: Session) -> list[Product]:
     return db.query(Product).offset(offset).limit(limit).all()
 
-def update_product_stock(data: ProductUpdate, db: Session) -> Product | None:
+def update_product_stock(data: ProductUpdateQuantity, db: Session) -> Product | None:
     product = db.query(Product).filter(Product.id == data.id).first()
 
     if not product:

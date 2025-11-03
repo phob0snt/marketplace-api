@@ -7,7 +7,7 @@ class CartBase(BaseModel):
     user_id: int
 
 class CartCreate(CartBase):
-    items: Optional[List[CartItemCreate]] = []
+    pass
 
 class CartResponse(CartBase):
     id: int

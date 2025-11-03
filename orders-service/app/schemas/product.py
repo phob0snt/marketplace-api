@@ -13,7 +13,7 @@ class ProductCreate(ProductBase):
 class ProductDelete(ProductBase):
     id: int
 
-class ProductUpdate(BaseModel):
+class ProductUpdateQuantity(BaseModel):
     id: int
     new_stock_quantity: int
     

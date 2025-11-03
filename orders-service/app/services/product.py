@@ -1,6 +1,7 @@
+from typing import List
 from sqlalchemy.orm import Session
 
-from app.schemas.product import ProductCreate, ProductResponse, ProductUpdate
+from app.schemas.product import ProductCreate, ProductResponse, ProductUpdateQuantity
 from app.repository import product as product_repo
 
 def create_product(data: ProductCreate, db: Session) -> ProductResponse:
@@ -15,7 +16,7 @@ def create_product(data: ProductCreate, db: Session) -> ProductResponse:
 
     return new_product
 
-def change_stock_quantity(data: ProductUpdate, db: Session) -> ProductResponse | None:
+def change_stock_quantity(data: ProductUpdateQuantity, db: Session) -> ProductResponse | None:
     product = product_repo.update_product_stock(data, db)
 
     if not product:
@@ -47,7 +48,7 @@ def get_product_by_id(product_id: int, db: Session) -> ProductResponse | None:
 
     return product_response
 
-def list_products(offset: int, limit: int, db: Session) -> list[ProductResponse]:
+def list_products(offset: int, limit: int, db: Session) -> List[ProductResponse]:
     products = product_repo.list_products(offset, limit, db)
 
     product_responses = [
