@@ -1,12 +1,12 @@
 from fastapi import APIRouter, Depends
+from fastapi.security import HTTPAuthorizationCredentials
 from sqlalchemy.orm import Session
 
 from app.db.session import get_db
-from app.models.auth import AuthORM
-from app.schemas.auth import AccountCreate, AccountLogin, AccountResponse, RefreshRequest, TokenPair, UserResponse
+from app.schemas.auth import AccountCreate, AccountLogin, AccountResponse, RefreshRequest, UserResponse
+from app.schemas.token import TokenPair, UserData
 from app.services import auth as auth_service
-from app.core.security import get_current_user
-
+from app.core.auth import get_current_user, security
 
 router = APIRouter(tags=["auth"])
 
@@ -23,8 +23,18 @@ def register_user(register_data: AccountCreate, db: Session = Depends(get_db)):
     return auth_service.register_user_with_login(register_data, db)
 
 @router.get("/me", response_model=UserResponse)
-def get_current_user(user: AuthORM = Depends(get_current_user)):
+def get_user(user: UserData = Depends(get_current_user)):
     return UserResponse(
-        id=user.id,
+        id=user.user_id,
         login=user.login,
     )
+
+@router.post("/logout")
+def logout(credentials: HTTPAuthorizationCredentials = Depends(security)):
+    token = credentials.credentials
+
+    result = auth_service.logout_user(token)
+    if not result:
+        return {"detail": "Failed to log out"}
+    
+    return {"detail": "Successfully logged out"}

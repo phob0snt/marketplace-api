@@ -8,6 +8,7 @@ def create_product(data: ProductCreate, db: Session) -> ProductResponse:
     product = product_repo.create(data, db)
     
     new_product = ProductResponse(
+        id=product.id,
         name=product.name,
         description=product.description,
         price=product.price,

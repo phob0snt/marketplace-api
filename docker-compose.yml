@@ -1,13 +1,35 @@
 services:
+  redis:
+    image: redis:7-alpine
+    container_name: redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 3s
+      timeout: 3s
+      retries: 10
   auth-service:
     build: ./auth-service
     container_name: auth-service
     ports:
       - "8081:8081"
     environment:
+      - JWT_SECRET_KEY=${JWT_SECRET_KEY}
+      - JWT_ALGORITHM=${JWT_ALGORITHM}
+      - ACCESS_TOKEN_EXPIRE_MINUTES=${ACCESS_TOKEN_EXPIRE_MINUTES}
+      - REDIS_URL=redis://redis:6379/0
       - DATABASE_URL=postgresql://${AUTH_DB_USER}:${AUTH_DB_PASSWORD}@auth-db:5432/${AUTH_DB_NAME}
     volumes:
       - auth_data:/var/lib/postgresql/data
+      - ./auth-service/migration:/app/migration
+    depends_on:
+      redis:
+        condition: service_healthy
+      auth-db:
+        condition: service_healthy
   auth-db:
     image: postgres:15
     container_name: auth-db
@@ -17,6 +39,50 @@ services:
       - POSTGRES_USER=${AUTH_DB_USER}
       - POSTGRES_PASSWORD=${AUTH_DB_PASSWORD}
       - POSTGRES_DB=${AUTH_DB_NAME}
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d auth"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+  orders-service:
+    build: ./orders-service
+    container_name: orders-service
+    ports:
+      - "8082:8082"
+    environment:
+      - JWT_SECRET_KEY=${JWT_SECRET_KEY}
+      - JWT_ALGORITHM=${JWT_ALGORITHM}
+      - ACCESS_TOKEN_EXPIRE_MINUTES=${ACCESS_TOKEN_EXPIRE_MINUTES}
+      - REDIS_URL=redis://redis:6379/0
+      - DATABASE_URL=postgresql://${ORDERS_DB_USER}:${ORDERS_DB_PASSWORD}@orders-db:5432/${ORDERS_DB_NAME}
+    volumes:
+      - ./orders-service/migration:/app/migration
+    depends_on:
+      redis:
+        condition: service_healthy
+      orders-db:
+        condition: service_healthy
+  orders-db:
+    image: postgres:15
+    container_name: orders-db
+    ports:
+      - "5433:5432"
+    environment:
+      - POSTGRES_USER=${ORDERS_DB_USER}
+      - POSTGRES_PASSWORD=${ORDERS_DB_PASSWORD}
+      - POSTGRES_DB=${ORDERS_DB_NAME}
+    volumes:
+      - orders_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d orders"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
 
 volumes:
   auth_data:
+  orders_data:
+  redis_data:

@@ -1,4 +1,4 @@
-from app.schemas.product import ProductCreate, ProductDelete, ProductUpdateQuantity
+from app.schemas.product import ProductCreate, ProductUpdateQuantity
 from sqlalchemy.orm import Session
 from app.models.product import Product
 

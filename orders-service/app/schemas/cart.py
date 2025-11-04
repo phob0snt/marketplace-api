@@ -1,7 +1,7 @@
-from typing import List, Optional
+from typing import List
 from pydantic import BaseModel
 
-from .cart_item import CartItemCreate, CartItemResponse
+from .cart_item import CartItemResponse
 
 class CartBase(BaseModel):
     user_id: int

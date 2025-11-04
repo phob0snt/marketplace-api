@@ -8,6 +8,9 @@ class CartItemBase(BaseModel):
 class CartItemCreate(CartItemBase):
     pass
 
+class CartItemUpdateQuantity(CartItemBase):
+    quantity: int
+
 class CartItemResponse(BaseModel):
     id: int
     quantity: int

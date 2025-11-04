@@ -4,7 +4,7 @@ from app.api.product import router as product_router
 from app.api.cart import router as cart_router
 from app.api.cart_item import router as cart_item_router
 
-app = FastAPI(title="Marketplace API Orders Service")
+app = FastAPI(title="Marketplace API Orders Service", version="1.0.0")
 
 app.include_router(product_router)
 app.include_router(cart_router)

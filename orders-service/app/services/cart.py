@@ -29,4 +29,5 @@ def get_cart_by_user_id(user_id: int, db: Session) -> CartResponse | None:
     return cart_response
 
 def clear_cart_for_user(user_id: int, db: Session) -> bool:
-    return cart_repo.clear_cart_for_user(user_id, db)
+    cart = cart_repo.get_cart_by_user_id(user_id, db)
+    return cart_repo.clear_cart(cart.id, db)

@@ -1,7 +1,7 @@
 from fastapi import HTTPException, status
 from sqlalchemy.orm import Session
 
-from app.schemas.cart_item import CartItemCreate, CartItemResponse
+from app.schemas.cart_item import CartItemCreate, CartItemResponse, CartItemUpdateQuantity
 from app.repository import cart as cart_repo
 from app.repository import cart_item as cart_item_repo
 from app.services import product as product_service
@@ -54,7 +54,7 @@ def list_cart_items(
 
 def change_cart_item_quantity(
         cart_item_id: int,
-        new_quantity: int,
+        data: CartItemUpdateQuantity,
         user_id: int,
         db: Session
 ) -> CartItemResponse | None:
@@ -74,7 +74,7 @@ def change_cart_item_quantity(
             detail="Access denied: this cart item not belongs to the user"
         )
     
-    updated_cart_item = cart_item_repo.change_quantity(cart_item_id, new_quantity, db)
+    updated_cart_item = cart_item_repo.change_quantity(cart_item_id, data, db)
 
     product = product_service.get_product_by_id(cart_item.product_id, db)
 
@@ -89,10 +89,18 @@ def change_cart_item_quantity(
 
     return updated_cart_item
 
-def get_cart_item_by_id(cart_item_id: int, db: Session) -> CartItemResponse | None:
+def get_cart_item_by_id(cart_item_id: int, user_id: int, db: Session) -> CartItemResponse | None:
     cart_item = cart_item_repo.get_cart_item_by_id(cart_item_id, db)
     if not cart_item:
         return None
+    
+    user_cart = cart_repo.get_cart_by_user_id(user_id, db)
+
+    if cart_item.cart_id != user_cart.id:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Access denied: this cart item not belongs to the user"
+        )
     
     product = product_service.get_product_by_id(cart_item.product_id, db)
     if not product:
@@ -104,5 +112,17 @@ def get_cart_item_by_id(cart_item_id: int, db: Session) -> CartItemResponse | No
         quantity=cart_item.quantity
     )
 
-def delete_cart_item(cart_item_id: int, db: Session) -> bool:
+def delete_cart_item(cart_item_id: int, user_id: int, db: Session) -> bool:
+    user_cart = cart_repo.get_cart_by_user_id(user_id, db)
+    cart_item = cart_item_repo.get_cart_item_by_id(cart_item_id, db)
+
+    if not cart_item:
+        return False
+    
+    if cart_item.cart_id != user_cart.id:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Access denied: this cart item not belongs to the user"
+        )
+    
     return cart_item_repo.delete(cart_item_id, db)

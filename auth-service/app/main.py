@@ -2,10 +2,10 @@ from fastapi import FastAPI
 
 from app.api import auth
 
-app = FastAPI(title="Dentist CRM Auth", version="1.0.0")
+app = FastAPI(title="Marketplace API Auth Service", version="1.0.0")
 
 app.include_router(auth.router, prefix="/api")
 
 @app.get("/")
 def read_root():
-    return {"message": "Marketplace API Auth service"}
+    return {"message": "Welcome to the Orders Service!"}
