@@ -8,6 +8,7 @@ class TokenPayload(BaseModel):
     type: str
     exp: int
 
+
 class UserData(BaseModel):
     user_id: int
     login: str

@@ -1,7 +1,9 @@
 from sqlalchemy.orm import Session
 
 from app.schemas.cart import CartCreate, CartResponse
+from app.schemas.cart_item import CartItemResponse
 from app.repository import cart as cart_repo
+
 
 def create_cart_for_user(data: CartCreate, db: Session) -> CartResponse:
     cart = cart_repo.create(data, db)
@@ -14,6 +16,7 @@ def create_cart_for_user(data: CartCreate, db: Session) -> CartResponse:
 
     return new_cart
 
+
 def get_cart_by_user_id(user_id: int, db: Session) -> CartResponse | None:
     cart = cart_repo.get_cart_by_user_id(user_id, db)
 
@@ -23,10 +26,11 @@ def get_cart_by_user_id(user_id: int, db: Session) -> CartResponse | None:
     cart_response = CartResponse(
         id=cart.id,
         user_id=cart.user_id,
-        items=[],
+        items=[CartItemResponse.model_validate(item) for item in cart.items],
     )
 
     return cart_response
+
 
 def clear_cart_for_user(user_id: int, db: Session) -> bool:
     cart = cart_repo.get_cart_by_user_id(user_id, db)

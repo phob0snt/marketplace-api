@@ -1,24 +1,28 @@
-from typing import List
+from typing import List, Literal
 from sqlalchemy.orm import Session
 
 from app.schemas.product import ProductCreate, ProductResponse, ProductUpdateQuantity
 from app.repository import product as product_repo
 
+
 def create_product(data: ProductCreate, db: Session) -> ProductResponse:
     product = product_repo.create(data, db)
-    
+
     new_product = ProductResponse(
         id=product.id,
         name=product.name,
         description=product.description,
         price=product.price,
-        stock_quantity=product.stock_quantity
+        stock_quantity=product.stock_quantity,
     )
 
     return new_product
 
-def change_stock_quantity(data: ProductUpdateQuantity, db: Session) -> ProductResponse | None:
-    product = product_repo.update_product_stock(data, db)
+
+def change_stock_quantity(
+    data: ProductUpdateQuantity, mode: Literal["set", "add"], db: Session
+) -> ProductResponse | None:
+    product = product_repo.update_product_stock(data, mode, db)
 
     if not product:
         return None
@@ -28,10 +32,11 @@ def change_stock_quantity(data: ProductUpdateQuantity, db: Session) -> ProductRe
         id=product.id,
         description=product.description,
         price=product.price,
-        stock_quantity=product.stock_quantity
+        stock_quantity=product.stock_quantity,
     )
 
     return updated_product
+
 
 def get_product_by_id(product_id: int, db: Session) -> ProductResponse | None:
     product = product_repo.get_product_by_id(product_id, db)
@@ -44,10 +49,11 @@ def get_product_by_id(product_id: int, db: Session) -> ProductResponse | None:
         name=product.name,
         description=product.description,
         price=product.price,
-        stock_quantity=product.stock_quantity
+        stock_quantity=product.stock_quantity,
     )
 
     return product_response
+
 
 def list_products(offset: int, limit: int, db: Session) -> List[ProductResponse]:
     products = product_repo.list_products(offset, limit, db)
@@ -58,12 +64,13 @@ def list_products(offset: int, limit: int, db: Session) -> List[ProductResponse]
             name=product.name,
             description=product.description,
             price=product.price,
-            stock_quantity=product.stock_quantity
+            stock_quantity=product.stock_quantity,
         )
         for product in products
     ]
 
     return product_responses
+
 
 def delete_product(product_id: int, db: Session) -> bool:
     return product_repo.delete_product(product_id, db)

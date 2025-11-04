@@ -3,9 +3,10 @@ from sqlalchemy import Column, DateTime, Integer, String
 
 from .base import Base
 
+
 class AuthORM(Base):
-    __tablename__ = 'auth'
-    
+    __tablename__ = "auth"
+
     id = Column(Integer, primary_key=True, index=True)
     login = Column(String, unique=True, index=True, nullable=False)
     role = Column(String, default="user", nullable=False)

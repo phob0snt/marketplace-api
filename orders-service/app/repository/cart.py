@@ -14,13 +14,15 @@ def create(data: CartCreate, db: Session) -> Cart:
 
     return new_cart
 
+
 def get_cart_by_user_id(user_id: int, db: Session) -> Cart | None:
     cart = db.query(Cart).filter(Cart.user_id == user_id).first()
 
     if not cart:
         return None
-    
+
     return cart
+
 
 def clear_cart(cart_id: int, db: Session) -> bool:
     cart = db.query(Cart).filter(Cart.id == cart_id).first()

@@ -3,6 +3,7 @@ from sqlalchemy.orm import relationship
 
 from .base import Base
 
+
 class CartItem(Base):
     __tablename__ = "cart_items"
 

@@ -5,21 +5,25 @@ from pydantic import BaseModel
 class ProductBase(BaseModel):
     name: str
     description: Optional[str] = None
-    price: float
+    price: int
+
 
 class ProductCreate(ProductBase):
     stock_quantity: int
 
+
 class ProductDelete(ProductBase):
     id: int
 
+
 class ProductUpdateQuantity(BaseModel):
     id: int
-    new_stock_quantity: int
-    
+    quantity: int
+
+
 class ProductResponse(ProductBase):
     id: int
     stock_quantity: int
 
     class Config:
-        orm_mode = True
+        from_attributes = True

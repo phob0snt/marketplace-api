@@ -1,15 +1,19 @@
 from pydantic import BaseModel
 from .product import ProductResponse
 
+
 class CartItemBase(BaseModel):
     product_id: int
     quantity: int
 
+
 class CartItemCreate(CartItemBase):
     pass
 
+
 class CartItemUpdateQuantity(CartItemBase):
     quantity: int
+
 
 class CartItemResponse(BaseModel):
     id: int
@@ -17,4 +21,4 @@ class CartItemResponse(BaseModel):
     product: ProductResponse
 
     class Config:
-        orm_mode = True
+        from_attributes = True
