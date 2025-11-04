@@ -18,15 +18,22 @@ Marketplace API - это полноценная backend-система, пост
 Переименуйте `.env.development` файл в `.env` и, при необходимости, измените его:
 
 ```env
-DATABASE_URL=postgresql://user:password@host:5432/marketplace_auth
-REDIS_URL=redis://redis:6379/0
-JWT_SECRET_KEY=your-secret-key-change-this-in-production
-JWT_ALGORITHM=HS256
-ACCESS_TOKEN_EXPIRE_MINUTES=30
+AUTH_DB_USER=postgres
+AUTH_DB_PASSWORD=postgres
+AUTH_DB_NAME=auth
+
 ADMIN_LOGIN=admin
 ADMIN_PASSWORD=admin123
 
-DATABASE_URL=postgresql://user:password@host:5432/marketplace_orders
+ORDERS_DB_USER=postgres
+ORDERS_DB_PASSWORD=postgres
+ORDERS_DB_NAME=orders
+
+REDIS_URL=redis://redis:6379/0
+
+JWT_SECRET_KEY=your_secret_key
+JWT_ALGORITHM=HS256
+ACCESS_TOKEN_EXPIRE_MINUTES=30
 ```
 
 ## 🚀 Быстрый старт
@@ -45,6 +52,7 @@ cd marketplace-api
 
 # 2. Запустить все сервисы
 docker-compose up -d
+
 
 # Готово! Сервисы автоматически:
 # ✓ Применят миграции БД
